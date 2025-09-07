@@ -1,0 +1,12 @@
+* {
+  /* Border color for pinned tabs */
+  --uc-vt-pinned-tab-border-color: light-dark(rgba(0, 0, 0, 0.22), rgba(172, 112, 255, 0.7));
+  /* Border color for unloaded pinned tabs */
+  --uc-vt-pinned-tab-unloaded-border-color: light-dark(rgba(0, 0, 0, 0.1), rgba(172, 112, 255, 0.28));
+  /* Background color for the active tab */
+  --uc-vt-active-tab-bgcolor: light-dark(#737373cc, #737373cc);
+  /* Inner border shadow (outline) for the active tab */
+  --uc-vt-active-tab-border-shadow: 0 0 0 1px light-dark(rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.467));
+  /* Drop shadow beneath the active tab */
+  --uc-vt-active-tab-drop-shadow: 0 1px 3px -1px light-dark(rgba(0, 0, 0, 0.196), rgba(0, 0, 0, 0.212));
+}

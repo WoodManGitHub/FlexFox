@@ -27,13 +27,13 @@ user_pref("uc.flex.remove-bookmarks-folder-icons",              false);
 /* Removes labels from bookmarks. */
 user_pref("uc.flex.remove-bookmarks-labels",                    false);
 /* Shows a confirmation message and version number in the about:config page. */
-user_pref("uc.flex.show-flexfox-version-info-in-about-config",   true);
+user_pref("uc.flex.show-flexfox-version-info-in-about-config",   false);
 /* Show a draggable separator between pinned and regular tabs in expanded vertical tabs */
 user_pref("uc.flex.show-pin-tabs-separator-in-expanded-state",  false);
 /* Moves PiP window volume button to the top */
 user_pref("uc.flex.move-pip-volume-to-top",                     false);
 /* Darkens background when URL bar dropdown is open (0 = off, 1–2 = dim intensity). */
-user_pref("uc.flex.dim-urlbar-popup-backdrop",                      0);
+user_pref("uc.flex.dim-urlbar-popup-backdrop",                      1);
 /* Adds margin, shadow, and rounded corners to web content (0 = off, 1–2 = more margin). */
 user_pref("uc.flex.enable-rounded-web-content",                     0);
 
@@ -45,9 +45,9 @@ user_pref("uc.flex.disable-flexfox",                            false);
 /* Disables the auto-hide feature of the bookmarks toolbar. */
 user_pref("uc.flex.disable-bookmarks-autohide",                 false);
 /* Disables the auto-hide feature of the horizontal tab bar. */
-user_pref("uc.flex.disable-tabs-toolbar-autohide",              false);
+user_pref("uc.flex.disable-tabs-toolbar-autohide",              true);
 /* Disables the auto-hide feature of the find bar. */
-user_pref("uc.flex.disable-findbar-autohide",                   false);
+user_pref("uc.flex.disable-findbar-autohide",                   true);
 /* Disables the auto-collapse feature of Sidebery and native vertical tabs. */
 user_pref("uc.flex.disable-sidebery-autohide",                  false);
 /* Disables the extra right padding after the first item in the navigation bar. */
@@ -55,13 +55,13 @@ user_pref("uc.flex.disable-nav-bar-first-item-right-padding",   false);
 /* Disables custom menu icons added by FlexFox. */
 user_pref("uc.flex.disable-menu-icons",                         false);
 /* Reverts the window control buttons (minimize, maximize, close) to Firefox's default design. */
-user_pref("uc.flex.revert-to-original-window-controls",         false);
+user_pref("uc.flex.revert-to-original-window-controls",         true);
 /* Reverts the rounded corner radius of the urlbar, searchbar, and findbar to Firefox's original flatter style. */
-user_pref("uc.flex.revert-to-original-flat-corner-style",       false);
+user_pref("uc.flex.revert-to-original-flat-corner-style",       true);
 /* Reverts the bookmark star icon to Firefox's default design. */
-user_pref("uc.flex.revert-to-original-bookmark-star-icon",      false);
+user_pref("uc.flex.revert-to-original-bookmark-star-icon",      true);
 /* Reverts the sidebar button icon to Firefox's default design. */
-user_pref("uc.flex.revert-to-original-sidebar-icon",            false);
+user_pref("uc.flex.revert-to-original-sidebar-icon",            true);
 /* Removes the sidebar stripe when Sidebery is active. */
 user_pref("uc.flex.remove-sidebar-stripe",                      false);
 
@@ -71,7 +71,7 @@ user_pref("uc.flex.increase-sidebery-expanded-width",           false);
 /* Increases navbar height, instead of Firefox's compact default. */
 user_pref("uc.flex.increase-navbar-height",                     false);
 /* Switches to a different, condensed extension panel. */
-user_pref("uc.flex.switch-to-alternate-condensed-panel",        false);
+user_pref("uc.flex.switch-to-alternate-condensed-panel",        true);
 /* Speeds up the hover expand/collapse transitions for Sidebery. */
 user_pref("uc.flex.sidebery-fast-hover-expand",                 false);
 /* Slows down the hover expand/collapse transitions for Sidebery. */
@@ -85,13 +85,13 @@ user_pref("uc.flex.max-visible-vertical-pinned-tabs",               4);
 /* Sets findbar position (string: "top-center-left"/"1", "top-right"/"2", "bottom-right"/"3"). */
 user_pref("uc.flex.findbar-position",                     "top-right");
 /* Sets vertical spacing between items in app/bookmark/context menus (string: "1"/"small", "2"/"medium", "3"/"large"). */
-user_pref("uc.flex.menu-item-spacing",                        "small");
+user_pref("uc.flex.menu-item-spacing",                        "medium");
 
 /* ⚙️ Native Firefox Settings */
 /* Fades out discarded tabs (manually unloaded) in Firefox's native vertical tabs. */
 user_pref("browser.tabs.fadeOutExplicitlyUnloadedTabs",          true);
 /* Fades out pending tabs (waiting to be restored at startup) in Firefox's native vertical tabs. */
-user_pref("browser.tabs.fadeOutUnloadedTabs",                   false);
+user_pref("browser.tabs.fadeOutUnloadedTabs",                   true);
 /* Sets animation duration for Firefox's native auto-collapse (only used if `sidebar.visibility` is set to `expand-on-hover`). */
 user_pref("sidebar.animation.expand-on-hover.duration-ms",        120);
 
