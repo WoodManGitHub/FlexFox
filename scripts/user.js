@@ -13,8 +13,16 @@ user_pref("uc.flex.add-ui-text-stroke",                         false);
 user_pref("uc.flex.fully-hide-sidebery",                        false);
 /* Fully hides the top tab bar, navigation bar, and bookmarks toolbar. */
 user_pref("uc.flex.fully-hide-toolbox",                         false);
+/* Auto-hide tabs in horizontal tab mode when Sidebery is inactive; 
+   0 = off, 1 = below navbar, 2 = above navbar */
+user_pref("uc.flex.auto-hide-horizontal-tabs-and-keep-navbar",      0);
+/* Auto-hide navbar in horizontal tab mode when Sidebery is inactive; 
+   0 = off, 1 = on; overrides horizontal tabs setting if both enabled */
+user_pref("uc.flex.auto-hide-navbar-and-keep-horizontal-tabs",      0);
 /* Auto-hides navigation bar icons until the cursor hovers over the toolbar. */
 user_pref("uc.flex.auto-hide-navbar-icons",                     false);
+/* Hide navigation bar window controls (minimize, maximize, close); show on navigation bar edge hover. */
+user_pref("uc.flex.auto-hide-window-controls",                  false);
 /* Allows toolbar colors from extensions like Firefox Color to apply when no background image is set. */
 user_pref("uc.flex.allow-addons-to-change-toolbar-color",       false);
 /* Sets gradient style for the highlight color (0 = off, 1–X = select style). Applies to logo, stripe, and star icon. */
@@ -30,12 +38,17 @@ user_pref("uc.flex.remove-bookmarks-labels",                    false);
 user_pref("uc.flex.show-flexfox-version-info-in-about-config",   false);
 /* Show a draggable separator between pinned and regular tabs in expanded vertical tabs */
 user_pref("uc.flex.show-pin-tabs-separator-in-expanded-state",  false);
-/* Moves PiP window volume button to the top */
-user_pref("uc.flex.move-pip-volume-to-top",                     false);
-/* Darkens background when URL bar dropdown is open (0 = off, 1–2 = dim intensity). */
-user_pref("uc.flex.dim-urlbar-popup-backdrop",                      1);
-/* Adds margin, shadow, and rounded corners to web content (0 = off, 1–2 = more margin). */
-user_pref("uc.flex.enable-rounded-web-content",                     0);
+/* Shows the tab close button when hovering over a tab's favicon in horizontal tabs mode. */
+user_pref("uc.flex.show-tab-close-button-on-favicon-hover",     false);
+/* Shows the total number of tabs in the "List All Tabs" button.
+   0 = disabled
+   1 = show icon and number (all tabs)
+   2 = show icon and number (only loaded tabs)
+   3 = show number only (all tabs)
+   4 = show number only (only loaded tabs) */
+user_pref("uc.flex.show-tab-count-in-alltabs-button",               0);
+/* Shows a numeric index before each tab's label text. */
+user_pref("uc.flex.show-tab-number-in-tab-label",               false);
 
 /* 🚫 Disable or Revert Features */
 /* Disables all FlexFox features without restarting Firefox */
@@ -44,16 +57,18 @@ user_pref("uc.flex.disable-flexfox",                            false);
 // user_pref("uc.flex.skip-loading-uc-*.css",                   false);
 /* Disables the auto-hide feature of the bookmarks toolbar. */
 user_pref("uc.flex.disable-bookmarks-autohide",                 false);
-/* Disables the auto-hide feature of the horizontal tab bar. */
-user_pref("uc.flex.disable-tabs-toolbar-autohide",              true);
 /* Disables the auto-hide feature of the find bar. */
 user_pref("uc.flex.disable-findbar-autohide",                   true);
 /* Disables the auto-collapse feature of Sidebery and native vertical tabs. */
 user_pref("uc.flex.disable-sidebery-autohide",                  false);
+/* Disables the close button on inactive horizontal tabs. */
+user_pref("uc.flex.disable-tab-close-button-on-inactive-horizontal-tabs", false);
 /* Disables the extra right padding after the first item in the navigation bar. */
 user_pref("uc.flex.disable-nav-bar-first-item-right-padding",   false);
 /* Disables custom menu icons added by FlexFox. */
 user_pref("uc.flex.disable-menu-icons",                         false);
+/* Restores the window control buttons (minimize, maximize, close) to the tab bar in horizontal tabs mode. */
+user_pref("uc.flex.restore-window-controls-on-tabbar",          false);
 /* Reverts the window control buttons (minimize, maximize, close) to Firefox's default design. */
 user_pref("uc.flex.revert-to-original-window-controls",         true);
 /* Reverts the rounded corner radius of the urlbar, searchbar, and findbar to Firefox's original flatter style. */
@@ -70,8 +85,13 @@ user_pref("uc.flex.remove-sidebar-stripe",                      false);
 user_pref("uc.flex.increase-sidebery-expanded-width",           false);
 /* Increases navbar height, instead of Firefox's compact default. */
 user_pref("uc.flex.increase-navbar-height",                     false);
+/* Keeps the active horizontal tab wider when tabs shrink, making it easier to distinguish from others.
+   Values: 0 = disabled, 1 = 1.8× no animation, 2 = 1.8× with animation, 3 = 2× no animation, 4 = 2× with animation */
+user_pref("uc.flex.increase-active-horizontal-tab-min-width",       1);
 /* Switches to a different, condensed extension panel. */
 user_pref("uc.flex.switch-to-alternate-condensed-panel",        true);
+/* Allow resizing Sidebery width; disables auto-collapse but allows toggling expand/collapse with Sidebar button */
+user_pref("uc.flex.sidebery-allow-resizable-width",             false);
 /* Speeds up the hover expand/collapse transitions for Sidebery. */
 user_pref("uc.flex.sidebery-fast-hover-expand",                 false);
 /* Slows down the hover expand/collapse transitions for Sidebery. */
@@ -80,7 +100,7 @@ user_pref("uc.flex.sidebery-slow-hover-expand",                 false);
 user_pref("uc.flex.sidebery-apply-expand-speed-to-toolbars",    false);
 /* Set tabs per row for pinned tabs in Sidebery and native vertical tabs (2–5, default 5) */
 user_pref("uc.flex.max-visible-horizontal-pinned-tabs",             5);
-/* Set max visible rows for pinned tabs in native vertical tabs (4–6, 0 = unlimited) */
+/* Set max visible rows for pinned tabs in Sidebery and native vertical tabs (2–8, 0 = unlimited) */
 user_pref("uc.flex.max-visible-vertical-pinned-tabs",               4);
 /* Sets findbar position (string: "top-center-left"/"1", "top-right"/"2", "bottom-right"/"3"). */
 user_pref("uc.flex.findbar-position",                     "top-right");
@@ -88,12 +108,62 @@ user_pref("uc.flex.findbar-position",                     "top-right");
 user_pref("uc.flex.menu-item-spacing",                        "medium");
 
 /* ⚙️ Native Firefox Settings */
+/* Improves startup speed by preventing pinned tabs from loading until selected. */
+user_pref("browser.sessionstore.restore_pinned_tabs_on_demand",  true);
 /* Fades out discarded tabs (manually unloaded) in Firefox's native vertical tabs. */
 user_pref("browser.tabs.fadeOutExplicitlyUnloadedTabs",          true);
 /* Fades out pending tabs (waiting to be restored at startup) in Firefox's native vertical tabs. */
 user_pref("browser.tabs.fadeOutUnloadedTabs",                   true);
 /* Sets animation duration for Firefox's native auto-collapse (only used if `sidebar.visibility` is set to `expand-on-hover`). */
 user_pref("sidebar.animation.expand-on-hover.duration-ms",        120);
+
+/* 🎨 UI Style & Appearance */
+/* Switches the sidebar toggle icon.
+   1 = Firefox Master Brand (default)
+   2 = Firefox Browser
+   3 = Firefox System 1
+   4 = Mozilla Flag */
+user_pref("uc.flex.style-sidebar-button",                           1);
+/* Changes navbar and sidebar background.
+   1 = Tokyo Night (default)
+   2 = Firefox Acorn Design */
+user_pref("uc.flex.style-toolbar-bgcolor",                          1);
+/* Customizes the URL bar appearance.
+   1 = Flat (default)
+   2 = Inset (centered text)
+   3 = Debossed (centered text)
+   4 = Seamless (centered text) */
+user_pref("uc.flex.style-urlbar",                                   1);
+/* Centers the URL bar popup.
+   0 = Disabled (default)
+   1 = When focused
+   2 = When typing */
+user_pref("uc.flex.move-urlbar-popup-to-center",                    0);
+/* Darkens background when URL bar dropdown is open (0 = off, 1–2 = dim intensity). */
+user_pref("uc.flex.dim-urlbar-popup-backdrop",                      0);
+/* Switches window control icon style.
+   1 = Traffic Light (default)
+   2 = Yosemite Buttons
+   3 = Yosemite GTK */
+user_pref("uc.flex.style-window-controls",                          1);
+/* Slightly raises the window control buttons. */
+user_pref("uc.flex.style-window-controls-shift-up",             false);
+/* Reduces the size of window control buttons. */
+user_pref("uc.flex.style-window-controls-shrink-size",          false);
+/* Moves window controls to the left side of the navbar or tab bar. */
+user_pref("uc.flex.move-window-controls-to-left",               false);
+/* Moves PiP window volume button to the top */
+user_pref("uc.flex.move-pip-volume-to-top",                     false);
+/* Adjusts the appearance of tab groups in native vertical tabs.
+   Values: 1 = show expand/collapse indicator without animation
+           2 = show indicator with animation
+           3 = center labels, no indicator, no animation
+           4 = center labels, no indicator, with animation */
+user_pref("uc.flex.style-tab-group",                                1);
+/* Adds margin, shadow, and rounded corners to web content (0 = off, 1–2 = more margin). */
+user_pref("uc.flex.enable-rounded-web-content",                     0);
+/* Also rounds the web content corner next to the Sidebery colored stripe when rounded web content is enabled. */
+user_pref("uc.flex.enable-rounded-web-content-at-sidebery-corner", false);
 
 /* 🧊 Visual Background & Mica Effects */
 /* Enables native Mica backdrop (Windows 11 only; requires System theme). */
@@ -121,15 +191,14 @@ user_pref("uc.flex.browser-wallpaper-contrast-level",               2);
 /* Adjusts the text scaling in the Firefox interface. 100 means no scaling. */
 // user_pref("ui.textScaleFactor",                                 100);
 
-/* Determines how Firefox handles OS text scaling settings. 
-   Value 2 applies OS text scaling to text only, not the entire interface. */
+/* Determines how Firefox handles OS text scaling settings.
+   0 = Do not apply
+   1 = Apply to the entire interface (default)
+   2 = Apply to text only */
 // user_pref("browser.display.os-zoom-behavior",                     2);
 
 /* Sets the overall interface scaling. 1.25 means 125% scaling. */
 // user_pref("layout.css.devPixelsPerPx",                         1.25);
-
-/* Prevents pinned tabs from automatically loading at browser startup. */
-// user_pref("browser.sessionstore.restore_pinned_tabs_on_demand",true);
 
 /* Opens searches, typed URLs, and bookmarks in new tabs. */
 // user_pref("browser.search.openintab",                          true);

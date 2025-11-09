@@ -1,24 +1,24 @@
 ﻿@-moz-document url("about:config") {
     /* Display FlexFox installation message */
-    @media -moz-pref("uc.flex.show-flexfox-version-info-in-about-config") {
+    @media not -moz-pref("uc.flex.show-flexfox-version-info-in-about-config", false) {
         body:lang(ja) {
             &::before {
-                content: "🎉  FlexFox v4.5.1 のインストールが完了しました。 \A 📝  オプションを調整するには、検索バーに `uc.flex` と入力してください。";
+                content: "🎉  FlexFox v5.5.3 のインストールが完了しました。 \A 📝  オプションを調整するには、検索バーに `uc.flex` と入力してください。";
             }
         }
         body:lang(zh-CN) {
             &::before {
-                content: "🎉  FlexFox v4.5.1 已成功安装。 \A 📝  如需调整选项，请在搜索栏中输入 `uc.flex`。";
+                content: "🎉  FlexFox v5.5.3 已成功安装。 \A 📝  如需调整选项，请在搜索栏中输入 `uc.flex`。";
             }
         }
         body:lang(zh-tw) {
             &::before {
-                content: "🎉  FlexFox v4.5.1 已成功安裝。 \A 📝  若需要調整選項，請在搜尋欄中輸入 `uc.flex`。";
+                content: "🎉  FlexFox v5.5.3 已成功安裝。 \A 📝  若需要調整選項，請在搜尋欄中輸入 `uc.flex`。";
             }
         }
 
         body::before {
-            content: "🎉  FlexFox v4.5.1 has been successfully installed. \A 📝  To adjust options, type `uc.flex` in the search bar.";
+            content: "🎉  FlexFox v5.5.3 has been successfully installed. \A 📝  To adjust options, type `uc.flex` in the search bar.";
             /* !-- End of version info -- */
             display: block;
             margin: 10px 10px 0px 10px;
@@ -37,14 +37,15 @@
     /* Highlight preferences that have been modified by the user */
     #prefs
         .has-user-value:has(
-            span[data-l10n-id="about-config-pref-accessible-value-custom"]:not(
+            .cell-value
+                > span[data-l10n-id="about-config-pref-accessible-value-custom"]:not(
                     [data-l10n-args='{"value":"false"}'],
                     [data-l10n-args='{"value":"0"}'],
                     [data-l10n-args='{"value":"top-right"}'],
                     [data-l10n-args='{"value":"small"}']
                 )
         ) {
-        --uc-pref-custom-bg: light-dark(#ea4c895e, #9651ff80);
+        --uc-pref-custom-bg: light-dark(#ea4c895e, #9059ff80);
         background-color: color-mix(
             in srgb,
             var(--uc-pref-custom-bg) 25%,
@@ -93,7 +94,7 @@
             0px 2px 4px 0px light-dark(rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.4)),
             0px 8px 15px 5px light-dark(rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.6));
         */
-        border: 2px solid light-dark(#ea4c89, #9651ff);
+        border: 2px solid light-dark(#ea4c89, #9059ff);
         border-radius: 8px;
         white-space: pre-line;
         line-height: 1.4;

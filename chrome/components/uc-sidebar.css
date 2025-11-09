@@ -1,7 +1,7 @@
 #sidebar-box {
     max-width: calc(100% - 496px) !important;
     @media -moz-pref("sidebar.revamp") {
-        max-width: calc(100% - var(--uc-sidebar-stripe-width) - (16em + 264px)) !important;
+        max-width: calc(100% - var(--uc-sidebar-stripe-width) - (16em + 260px)) !important;
     }
     min-width: var(--uc-sidebar-stripe-width) !important;
 }
@@ -33,6 +33,15 @@
             background-size: 20px;
             mask-position: var(--uc-sidebar-button-bg-pos-last);
             mask-size: 20px;
+            /* In horizontal tab mode, adjust icon size only when Sidebery is active */
+            @media not -moz-pref("sidebar.verticalTabs") {
+                position: var(--uc-sb-sidebar-button-bg-pos, flex);
+                height: var(--uc-sb-sidebar-button-height-last, auto);
+                background-position: var(--uc-sb-sidebar-button-bg-pos-last, var(--uc-sidebar-button-bg-pos-last));
+                background-size: var(--uc-sb-sidebar-button-bg-size, 18px);
+                mask-position: var(--uc-sb-sidebar-button-bg-pos-last, var(--uc-sidebar-button-bg-pos-last));
+                mask-size: var(--uc-sb-sidebar-button-bg-size, 18px);
+            }
         }
         @media not -moz-pref("uc.flex.revert-to-original-sidebar-icon") {
             fill: var(--toolbarbutton-icon-fill) !important;
@@ -57,12 +66,39 @@
             */
             &:first-child {
                 background-position: var(--uc-sidebar-button-bg-pos-first);
-                background-size: 20px;
                 mask-position: var(--uc-sidebar-button-bg-pos-first);
-                mask-size: 20px;
-                @media (display-mode: fullscreen) {
+                @media not -moz-pref("uc.flex.move-window-controls-to-left"),
+                    -moz-pref("uc.flex.auto-hide-window-controls") {
+                    background-size: 20px;
+                    mask-size: 20px;
+                }
+                :root[inFullscreen] & {
                     background-position: var(--uc-sidebar-button-bg-pos-first-fs);
                     mask-position: var(--uc-sidebar-button-bg-pos-first-fs);
+                }
+                /* In horizontal tab mode, adjust icon size only when Sidebery is active */
+                @media not (-moz-pref("sidebar.verticalTabs") or -moz-pref("uc.flex.move-window-controls-to-left")),
+                    -moz-pref("uc.flex.auto-hide-window-controls") and (not -moz-pref("sidebar.verticalTabs")) {
+                    background-position: var(
+                        --uc-sb-sidebar-button-bg-pos-first,
+                        var(--uc-sidebar-button-bg-pos-first)
+                    );
+                    background-size: var(--uc-sb-sidebar-button-bg-size, 18px);
+                    mask-position: var(--uc-sb-sidebar-button-bg-pos-first, var(--uc-sidebar-button-bg-pos-first));
+                    mask-size: var(--uc-sb-sidebar-button-bg-size, 18px);
+                    :root[inFullscreen] & {
+                        background-position: var(--uc-sidebar-button-bg-pos-first-fs);
+                        mask-position: var(--uc-sidebar-button-bg-pos-first-fs);
+                    }
+                }
+            }
+
+            &:not([checked="true"]) {
+                @media -moz-pref("uc.flex.style-sidebar-button", 3) {
+                    --uc-flexfox-logo-image: url("../icons/toolbarbutton/firefox-newaita-mono.svg");
+                }
+                @media -moz-pref("uc.flex.style-sidebar-button", 4) {
+                    --toolbarbutton-icon-fill: rgb(105, 105, 105) !important;
                 }
             }
 
@@ -107,9 +143,7 @@
     /* Expand sidebar header on hover */
     #sidebar-box[sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"][sidebar-panel-open] {
         #sidebar-header:is(:hover, :has(#sidebar-switcher-target.active)) {
-            @media (prefers-color-scheme: light) {
-                --sidebar-border-color: #ced1d4;
-            }
+            border-bottom: 1px solid var(--uc-sidebar-header-border-color) !important;
             max-height: 100%;
             max-width: 100%;
             min-width: var(--uc-sb-sidebar-hover-width);
@@ -175,8 +209,8 @@
         }
 
         /* When Sidebery's auto-collapse is disabled, limit the sidebar header width to the specified value */
-        @media -moz-pref("uc.flex.disable-sidebery-autohide") and (not (-moz-pref("uc.flex.fully-hide-sidebery") or (display-mode: fullscreen))) {
-            :root:not([titlepreface*="\200c "], [titlepreface*="\200d "]) & {
+        @media -moz-pref("uc.flex.disable-sidebery-autohide") and (not -moz-pref("uc.flex.fully-hide-sidebery")) {
+            :root:not([inFullscreen], [titlepreface*="\200c "], [titlepreface*="\200d "]) & {
                 /*
                 --sidebar-background-color: var(--uc-sidebar-header-bgcolor, var(--lwt-accent-color)) !important;
                 */
@@ -186,8 +220,9 @@
                 }
             }
         }
-        @media not (-moz-pref("uc.flex.disable-sidebery-autohide") or -moz-pref("uc.flex.fully-hide-sidebery") or (display-mode: fullscreen)) {
+        @media not (-moz-pref("uc.flex.disable-sidebery-autohide") or -moz-pref("uc.flex.fully-hide-sidebery")) {
             :root:is([sidebar-expand-on-hover], [titlepreface*="\180e "]):not(
+                    [inFullscreen],
                     [titlepreface*="\200c "],
                     [titlepreface*="\200d "]
                 )
@@ -208,7 +243,7 @@
         }
     }
 
-    @media -moz-pref("uc.flex.fully-hide-sidebery"), (display-mode: fullscreen) {
+    @media -moz-pref("uc.flex.fully-hide-sidebery") {
         #sidebar-box[sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"][sidebar-panel-open] {
             &:hover #sidebar-header:not(:hover):has(#sidebar-switcher-target:not(.active)) {
                 min-height: 5px;
@@ -240,7 +275,7 @@
         }
     }
     @media not -moz-pref("uc.flex.fully-hide-sidebery") {
-        :root:is([titlepreface*="\200c "], [titlepreface*="\200d "]) {
+        :root:is([inFullscreen], [titlepreface*="\200c "], [titlepreface*="\200d "]) {
             #sidebar-box[sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"][sidebar-panel-open] {
                 &:hover #sidebar-header:not(:hover):has(#sidebar-switcher-target:not(.active)) {
                     min-height: 5px;
@@ -284,28 +319,30 @@
 ═════════════════════════════════════════════════════════════════════ */
 
 /* Auto-hide sidebar in fullscreen or when Sidebery is fully hidden */
-@media -moz-pref("uc.flex.fully-hide-sidebery"), (display-mode: fullscreen) {
-    #sidebar-box[sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"][sidebar-panel-open],
-    #sidebar-main[sidebar-launcher-expanded] {
-        &:not([sidebar-positionend]) {
-            /* Fixed position for left-side sidebar */
+@media -moz-pref("uc.flex.fully-hide-sidebery") {
+    :root:not([inDOMFullscreen]) {
+        #sidebar-box[sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"][sidebar-panel-open] {
             position: absolute !important;
-            left: 0px;
+            /* Fixed position for left-side sidebar */
+            &:not([sidebar-positionend]) {
+                left: 0px;
+            }
+            /* Fixed position for right-side sidebar */
+            &[sidebar-positionend] {
+                right: 0px;
+            }
             height: calc(
                 100% - (var(--uc-sb-sidebar-main-stripe-height, 0px) + var(--uc-sb-sidebar-main-margin-top, 0px))
             );
             /* Make sidebar transparent */
             opacity: 0;
+
             &:hover {
                 /* Show sidebar on hover */
                 /**
-                * Extend opacity transition delay slightly (10ms) 
-                * to avoid abrupt display changes when opacity changes from 0 to 1 
-                */
-                /*
-                transition: opacity var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                    calc(var(--uc-hover-sidebar-delay) + 10ms) !important;
-                */
+            * Extend opacity transition delay slightly (10ms) 
+            * to avoid abrupt display changes when opacity changes from 0 to 1 
+            */
                 transition:
                     opacity var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
                         calc(var(--uc-hover-sidebar-delay) + 10ms),
@@ -316,102 +353,83 @@
             }
         }
 
-        &[sidebar-positionend] {
-            /* Fixed position for right-side sidebar */
-            position: absolute !important;
-            right: 0px;
-            height: calc(
-                100% - (var(--uc-sb-sidebar-main-stripe-height, 0px) + var(--uc-sb-sidebar-main-margin-top, 0px))
-            );
-            opacity: 0;
-            &:hover {
-                /* Show sidebar on hover */
-                /**
-                * Extend opacity transition delay slightly (10ms) 
-                * to avoid abrupt display changes when opacity changes from 0 to 1 
-                */
-                /*
-                transition: opacity var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                    calc(var(--uc-hover-sidebar-delay) + 10ms) !important;
-                */
-                transition:
-                    opacity var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                        calc(var(--uc-hover-sidebar-delay) + 10ms),
-                    z-index 0ms linear calc(var(--uc-hover-sidebar-delay) - 10ms) allow-discrete,
-                    clip-path var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                        var(--uc-hover-sidebar-delay) !important;
-                opacity: 1;
-            }
-        }
-        /* Applies styles for native vertical tabs when fully hidden or in fullscreen.
-        Behavior depends on whether Sidebery is active, determined via --uc-sb-* variables. */
-        &:is(#sidebar-main) {
-            max-width: var(--uc-sb-sidebar-main-width, var(--uc-sidebar-hover-trigger-width)) !important;
-            height: var(--uc-sb-sidebar-main-hover-min-height, 100%);
-            opacity: var(--uc-sb-sidebar-main-opacity, 0);
-            &:hover {
-                opacity: 1;
-            }
-            &:not(:hover) sidebar-main[expanded] {
-                min-width: var(--uc-sb-sidebar-main-width, 1px);
+        @media not -moz-pref("sidebar.visibility", "expand-on-hover") {
+            #sidebar-main[sidebar-launcher-expanded] {
+                position: absolute !important;
+                &:not([sidebar-positionend]) {
+                    left: 0px;
+                }
+                &[sidebar-positionend] {
+                    right: 0px;
+                }
+                height: var(--uc-sb-sidebar-main-hover-min-height, 100%);
+                opacity: var(--uc-sb-sidebar-main-opacity, 0);
+
+                &:hover {
+                    transition:
+                        opacity var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                            calc(var(--uc-hover-sidebar-delay) + 10ms),
+                        z-index 0ms linear calc(var(--uc-hover-sidebar-delay) - 10ms) allow-discrete !important;
+                    opacity: 1;
+                }
+
+                /* Applies styles for native vertical tabs when fully hidden or in fullscreen.
+                Behavior depends on whether Sidebery is active, determined via --uc-sb-* variables. */
+                max-width: var(--uc-sb-sidebar-main-width, var(--uc-sidebar-hover-trigger-width)) !important;
+                &:not(:hover) sidebar-main[expanded] {
+                    min-width: var(--uc-sb-sidebar-main-width, 1px);
+                }
             }
         }
     }
 }
 @media not -moz-pref("uc.flex.fully-hide-sidebery") {
-    :root:is([titlepreface*="\200c "], [titlepreface*="\200d "]) {
-        #sidebar-box[sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"][sidebar-panel-open],
-        #sidebar-main[sidebar-launcher-expanded] {
+    :root:is([inFullscreen], [titlepreface*="\200c "], [titlepreface*="\200d "]):not([inDOMFullscreen]) {
+        #sidebar-box[sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"][sidebar-panel-open] {
+            position: absolute !important;
             &:not([sidebar-positionend]) {
-                position: absolute !important;
                 left: 0px;
-                height: calc(
-                    100% - (var(--uc-sb-sidebar-main-stripe-height, 0px) + var(--uc-sb-sidebar-main-margin-top, 0px))
-                );
-                opacity: 0;
-                &:hover {
-                    /*
-                    transition: opacity var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                        calc(var(--uc-hover-sidebar-delay) + 10ms) !important;
-                    */
-                    transition:
-                        opacity var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                            calc(var(--uc-hover-sidebar-delay) + 10ms),
-                        z-index 0ms linear calc(var(--uc-hover-sidebar-delay) - 10ms) allow-discrete,
-                        clip-path var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                            var(--uc-hover-sidebar-delay) !important;
-                    opacity: 1;
-                }
             }
-
             &[sidebar-positionend] {
-                position: absolute !important;
                 right: 0px;
-                height: calc(
-                    100% - (var(--uc-sb-sidebar-main-stripe-height, 0px) + var(--uc-sb-sidebar-main-margin-top, 0px))
-                );
-                opacity: 0;
-                &:hover {
-                    /*
-                    transition: opacity var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                        calc(var(--uc-hover-sidebar-delay) + 10ms) !important;
-                    */
-                    transition:
-                        opacity var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                            calc(var(--uc-hover-sidebar-delay) + 10ms),
-                        z-index 0ms linear calc(var(--uc-hover-sidebar-delay) - 10ms) allow-discrete,
-                        clip-path var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                            var(--uc-hover-sidebar-delay) !important;
-                    opacity: 1;
-                }
             }
-            &:is(#sidebar-main) {
-                max-width: var(--uc-sb-sidebar-main-width, var(--uc-sidebar-hover-trigger-width)) !important;
+            height: calc(
+                100% - (var(--uc-sb-sidebar-main-stripe-height, 0px) + var(--uc-sb-sidebar-main-margin-top, 0px))
+            );
+            opacity: 0;
+
+            &:hover {
+                transition:
+                    opacity var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                        calc(var(--uc-hover-sidebar-delay) + 10ms),
+                    z-index 0ms linear calc(var(--uc-hover-sidebar-delay) - 10ms) allow-discrete,
+                    clip-path var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                        var(--uc-hover-sidebar-delay) !important;
+                opacity: 1;
+            }
+        }
+
+        @media not -moz-pref("sidebar.visibility", "expand-on-hover") {
+            #sidebar-main[sidebar-launcher-expanded] {
+                position: absolute !important;
+                &:not([sidebar-positionend]) {
+                    left: 0px;
+                }
+                &[sidebar-positionend] {
+                    right: 0px;
+                }
                 height: var(--uc-sb-sidebar-main-hover-min-height, 100%);
                 opacity: var(--uc-sb-sidebar-main-opacity, 0);
+
                 &:hover {
+                    transition:
+                        opacity var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                            calc(var(--uc-hover-sidebar-delay) + 10ms),
+                        z-index 0ms linear calc(var(--uc-hover-sidebar-delay) - 10ms) allow-discrete !important;
                     opacity: 1;
                 }
+
+                max-width: var(--uc-sb-sidebar-main-width, var(--uc-sidebar-hover-trigger-width)) !important;
                 &:not(:hover) sidebar-main[expanded] {
                     min-width: var(--uc-sb-sidebar-main-width, 1px);
                 }
@@ -493,6 +511,10 @@
         --uc-sb-sidebar-main-hover-max-height: 100%;
         --uc-sb-sidebar-main-hover-height: fit-content;
         --uc-sb-sidebar-stripe-display: none;
+        --uc-sb-sidebar-stripe-visibility: collapse;
+        --uc-sb-moz-button-visibility: hidden;
+        --uc-sb-vertical-tabs-size: 0px;
+
         /*
         --uc-sb-sidebar-main-background-duration: var(--uc-autohide-transition-duration);
         --uc-sb-sidebar-main-background-delay: calc(var(--uc-autohide-sidebar-delay) + 10ms);
@@ -502,8 +524,8 @@
             --uc-sb-sidebar-main-background-image: var(--uc-gradient-highlight);
         }
         --uc-sidebar-main-stripe: var(--uc-sb-sidebar-header-stripe);
-        @media -moz-pref("uc.flex.disable-sidebery-autohide") and (not (-moz-pref("uc.flex.fully-hide-sidebery") or (display-mode: fullscreen))) {
-            :root:not([titlepreface*="\200c "], [titlepreface*="\200d "]) & {
+        @media -moz-pref("uc.flex.disable-sidebery-autohide") and (not -moz-pref("uc.flex.fully-hide-sidebery")) {
+            :root:not([inFullscreen], [titlepreface*="\200c "], [titlepreface*="\200d "]) & {
                 /*
                 --sidebar-background-color: var(--uc-toolbar-bgcolor) !important;
                 */
@@ -511,8 +533,9 @@
             }
         }
 
-        @media not (-moz-pref("uc.flex.disable-sidebery-autohide") or -moz-pref("uc.flex.fully-hide-sidebery") or (display-mode: fullscreen)) {
+        @media not (-moz-pref("uc.flex.disable-sidebery-autohide") or -moz-pref("uc.flex.fully-hide-sidebery")) {
             :root:is([sidebar-expand-on-hover], [titlepreface*="\180e "]):not(
+                    [inFullscreen],
                     [titlepreface*="\200c "],
                     [titlepreface*="\200d "]
                 )
@@ -523,7 +546,7 @@
                 --uc-sb-sidebar-main-width: var(--uc-sidebar-stripe-width);
             }
         }
-        @media -moz-pref("uc.flex.fully-hide-sidebery"), (display-mode: fullscreen) {
+        @media -moz-pref("uc.flex.fully-hide-sidebery") {
             --uc-sb-sidebar-main-opacity: 0;
             --uc-sb-sidebar-main-opacity-duration: 0ms;
             --uc-sb-sidebar-main-opacity-delay: 0ms;
@@ -533,7 +556,7 @@
             }
         }
         @media not -moz-pref("uc.flex.fully-hide-sidebery") {
-            :root:is([titlepreface*="\200c "], [titlepreface*="\200d "]) & {
+            :root:is([inFullscreen], [titlepreface*="\200c "], [titlepreface*="\200d "]) & {
                 --uc-sb-sidebar-main-opacity: 0;
                 --uc-sb-sidebar-main-opacity-duration: 0ms;
                 --uc-sb-sidebar-main-opacity-delay: 0ms;
@@ -553,7 +576,7 @@
     #sidebar-main[sidebar-panel-open]:has(
             ~ #sidebar-box[sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"]:hover
         ) {
-        @media -moz-pref("uc.flex.fully-hide-sidebery"), (display-mode: fullscreen) {
+        @media -moz-pref("uc.flex.fully-hide-sidebery") {
             /* When "Disable Sidebery Collapse" is toggled via hotkey (instead of the about:config option),  
                we need to explicitly cap max-width to match the stripe width. */
             --uc-sb-sidebar-main-width: var(--uc-sidebar-stripe-width);
@@ -571,7 +594,7 @@
             --uc-sb-sidebar-main-opacity-delay: calc(var(--uc-hover-sidebar-delay) + 10ms);
         }
         @media not -moz-pref("uc.flex.fully-hide-sidebery") {
-            :root:is([titlepreface*="\200c "], [titlepreface*="\200d "]) & {
+            :root:is([inFullscreen], [titlepreface*="\200c "], [titlepreface*="\200d "]) & {
                 --uc-sb-sidebar-main-width: var(--uc-sidebar-stripe-width);
                 --uc-sb-sidebar-main-opacity: 1;
                 --uc-autohide-sidebar-delay: var(--uc-hover-sidebar-delay);
@@ -620,9 +643,16 @@
             :root:not([sidebar-expand-on-hover]) &[sidebar-panel-open] {
                 position: var(--uc-sb-sidebar-main-position, static) !important;
             }
+            /* Unify #sidebar-main positioning to absolute (instead of switching between relative/absolute on hover) 
+               to simplify layout and remove the need to check whether Sidebery is active. */
+            :root[sidebar-expand-on-hover] & {
+                position: absolute !important;
+            }
+            /*
             :root[sidebar-expand-on-hover] &[sidebar-panel-open] {
                 position: var(--uc-sb-sidebar-main-position, absolute) !important;
             }
+            */
         }
         &[sidebar-positionend] {
             right: 0px;
@@ -637,13 +667,18 @@
         @media -moz-pref("uc.flex.disable-sidebery-autohide") {
             z-index: var(--uc-sb-sidebar-main-z-index, --browser-area-z-index-sidebar);
         }
-        @media not (-moz-pref("uc.flex.disable-sidebery-autohide") or (display-mode: fullscreen)) {
-            :root[titlepreface*="\180e "] & {
+        /** 
+         * Since :root[titlepreface*="\180e "] has higher priority, 
+         * it needs to explicitly exclude fully hidden Sidebery and fullscreen cases 
+         * to avoid overriding the following rules. 
+         */
+        @media not (-moz-pref("uc.flex.disable-sidebery-autohide") or -moz-pref("uc.flex.fully-hide-sidebery")) {
+            :root[titlepreface*="\180e "]:not([inFullscreen], [titlepreface*="\200c "], [titlepreface*="\200d "]) & {
                 z-index: var(--uc-sb-sidebar-main-z-index, --browser-area-z-index-sidebar);
             }
         }
         /* No need to lower z-index when vertical tabs are fully hidden or in fullscreen */
-        @media -moz-pref("uc.flex.fully-hide-sidebery"), (display-mode: fullscreen) {
+        @media -moz-pref("uc.flex.fully-hide-sidebery") {
             z-index: var(--uc-sb-sidebar-main-z-index, var(--browser-area-z-index-toolbox-while-animating));
             /**
              * When vertical tabs are collapsed,
@@ -652,11 +687,17 @@
             &:not([sidebar-launcher-expanded]) {
                 z-index: var(--uc-sb-sidebar-main-z-index, var(--browser-area-z-index-sidebar));
             }
+            @media -moz-pref("sidebar.visibility", "expand-on-hover") {
+                z-index: var(--uc-sb-sidebar-main-z-index, var(--browser-area-z-index-sidebar));
+            }
         }
         @media not -moz-pref("uc.flex.fully-hide-sidebery") {
-            :root:is([titlepreface*="\200c "], [titlepreface*="\200d "]) & {
+            :root:is([inFullscreen], [titlepreface*="\200c "], [titlepreface*="\200d "]) & {
                 z-index: var(--uc-sb-sidebar-main-z-index, var(--browser-area-z-index-toolbox-while-animating));
                 &:not([sidebar-launcher-expanded]) {
+                    z-index: var(--uc-sb-sidebar-main-z-index, var(--browser-area-z-index-sidebar));
+                }
+                @media -moz-pref("sidebar.visibility", "expand-on-hover") {
                     z-index: var(--uc-sb-sidebar-main-z-index, var(--browser-area-z-index-sidebar));
                 }
             }
@@ -723,8 +764,8 @@
         max-height: var(--uc-sb-sidebar-main-hover-max-height) !important;
         max-width: var(--uc-sb-sidebar-main-width) !important;
         /* Raise z-index on hover so #sidebar-main appears above other elements */
-        @media not (-moz-pref("uc.flex.disable-sidebery-autohide") or -moz-pref("uc.flex.fully-hide-sidebery") or (display-mode: fullscreen)) {
-            :root:not([titlepreface*="\180e "], [titlepreface*="\200c "], [titlepreface*="\200d "]) & {
+        @media not (-moz-pref("uc.flex.disable-sidebery-autohide") or -moz-pref("uc.flex.fully-hide-sidebery")) {
+            :root:not([inFullscreen], [titlepreface*="\180e "], [titlepreface*="\200c "], [titlepreface*="\200d "]) & {
                 z-index: var(--uc-sb-sidebar-main-z-index, var(--browser-area-z-index-toolbox-while-animating));
                 /** 
                  * When the revamped sidebar is active but [sidebar-launcher-expanded] is missing
@@ -777,22 +818,34 @@
     }
 
     /*
-     * This block is logically tied to the position setting of #sidebar-main 
-     * under @media -moz-pref("sidebar.visibility", "expand-on-hover"). 
-     * Changes to #sidebar-main's positioning affect how much margin 
-     * #sidebar-box needs, so the two are functionally connected.
+     * Layout adjustment for expand-on-hover: since #sidebar-main is forced 
+     * to absolute positioning, #sidebar-box and #tabbrowser-tabbox need 
+     * extra margin to reserve space for it.
      *
-     * Ideally, this rule would be written together with #sidebar-main 
-     * using the "~" general sibling selector for clarity and easier maintenance. 
-     * However, to keep the selector complexity low and avoid potential 
-     * performance issues, it's placed here as a separate rule.
+     * Ideally this would be grouped with #sidebar-main using "~", but it's 
+     * kept separate here to reduce selector complexity.
      */
     @media -moz-pref("sidebar.visibility", "expand-on-hover") {
-        #sidebar-box[sidebar-panel-open]:not([sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"]) {
-            :root[sidebar-expand-on-hover] & {
-                margin-inline-start: var(--sidebar-launcher-collapsed-width) !important;
+        :root[sidebar-expand-on-hover] {
+            /* When Sidebery is inactive, #sidebar-box sits next to #sidebar-main, 
+               so extra margin is needed to leave space for vertical tabs. */
+            #sidebar-box[sidebar-panel-open]:not(
+                    [sidebarcommand="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"]
+                ) {
+                &:not([sidebar-positionend]) {
+                    margin-inline-start: var(--sidebar-launcher-collapsed-width) !important;
+                }
                 &[sidebar-positionend] {
-                    margin-inline-start: 0 !important;
+                    margin-inline-end: var(--sidebar-launcher-collapsed-width) !important;
+                }
+            }
+            /* When #sidebar-box is closed, #tabbrowser-tabbox sits next to #sidebar-main, 
+               so extra margin is needed to leave space for vertical tabs. */
+            #tabbrowser-tabbox:not([sidebar-panel-open]) {
+                &:not([sidebar-positionend]) {
+                    margin-inline-start: var(--sidebar-launcher-collapsed-width) !important;
+                }
+                &[sidebar-positionend] {
                     margin-inline-end: var(--sidebar-launcher-collapsed-width) !important;
                 }
             }
@@ -803,8 +856,11 @@
         margin-top: calc(var(--uc-sb-sidebar-main-stripe-height) + var(--uc-sb-sidebar-main-margin-top));
 
         @media -moz-pref("sidebar.visibility", "expand-on-hover") {
-            /* Remove unwanted 1px margin when Sidebery is in 'expand-on-hover' state */
+            /* Obsolete */
+            /*
+            \/* Remove unwanted 1px margin when Sidebery is in 'expand-on-hover' state *\/
             margin-top: calc(var(--uc-sb-sidebar-main-stripe-height) + var(--uc-sb-sidebar-main-margin-top) - 1px);
+            */
 
             /* Remove unnecessary margin when Sidebery is in 'expand-on-hover' state */
             margin-inline-start: 0px !important;
@@ -835,15 +891,40 @@
         }
     }
 
-    /* Remove native vertical tabs when Sidebery is active. */
-    #sidebar-main #vertical-tabs {
-        display: var(--uc-sb-sidebar-stripe-display, flex) !important;
+    /** 
+     * Native vertical tabs cannot be hidden with display:none 
+     * because tab count features would stop working. 
+     * Using visibility:collapse also causes slow scrolling 
+     * when switching between horizontal and vertical tab modes. 
+     * To avoid both issues, use size control instead. 
+     */
+    #sidebar-main[sidebar-panel-open] #vertical-tabs:not([collapse]) {
+        @media not -moz-pref("uc.flex.show-tab-count-in-alltabs-button") {
+            display: var(--uc-sb-sidebar-stripe-display, flex) !important;
+        }
+        @media -moz-pref("uc.flex.show-tab-count-in-alltabs-button") {
+            width: var(--uc-sb-vertical-tabs-size, auto);
+            height: var(--uc-sb-vertical-tabs-size, auto);
+        }
+    }
+
+    /* Fix v144 container change that broke vertical tabs' ability to size to its children */
+    #sidebar-main:not([sidebar-launcher-expanded][sidebar-panel-open]) #vertical-tabs {
+        contain-intrinsic-width: var(--uc-sidebar-stripe-width);
+        /*
+        min-width: var(--uc-sidebar-stripe-width);
+        */
     }
 
     /* Remove sidebar stripe when Sidebery is active. */
     @media -moz-pref("uc.flex.remove-sidebar-stripe") {
         #sidebar-main {
-            display: var(--uc-sb-sidebar-stripe-display, flex) !important;
+            @media not -moz-pref("uc.flex.show-tab-count-in-alltabs-button") {
+                display: var(--uc-sb-sidebar-stripe-display, flex) !important;
+            }
+            @media -moz-pref("uc.flex.show-tab-count-in-alltabs-button") {
+                visibility: var(--uc-sb-sidebar-stripe-visibility, visible);
+            }
         }
     }
 
@@ -893,11 +974,11 @@
                     z-index: var(--uc-sb-sidebar-main-z-index, var(--browser-area-z-index-toolbox-while-animating));
                 }
             }
-            @media -moz-pref("uc.flex.fully-hide-sidebery"), (display-mode: fullscreen) {
+            @media -moz-pref("uc.flex.fully-hide-sidebery") {
                 z-index: var(--uc-sb-sidebar-main-z-index, var(--browser-area-z-index-toolbox-while-animating));
             }
             @media not -moz-pref("uc.flex.fully-hide-sidebery") {
-                :root:is([titlepreface*="\200c "], [titlepreface*="\200d "]) & {
+                :root:is([inFullscreen], [titlepreface*="\200c "], [titlepreface*="\200d "]) & {
                     z-index: var(--uc-sb-sidebar-main-z-index, var(--browser-area-z-index-toolbox-while-animating));
                 }
             }
@@ -1036,10 +1117,11 @@
         /* Adjust spacing between buttons in tools-and-extensions when Sidebery is active */
         padding-block-start: var(--uc-sb-sroot-padding-block-start, var(--space-xxsmall));
 
+        /* Obsolete */
         > moz-button[view="_3c078156-979c-498b-8990-85f7987dd929_-sidebar-action"] {
             /* --button-outer-padding-block-end: 0; */
             .tools-and-extensions.actions-list:not(:hover) & {
-                visibility: hidden;
+                visibility: var(--uc-sb-moz-button-visibility);
             }
         }
         /*
@@ -1126,7 +1208,7 @@
                 --button-outer-padding-block-end: var(--uc-sb-sroot-btn-padding-block-end-sidebery, var(--space-small));
                 */
                 .tools-and-extensions.actions-list:not(:hover) & {
-                    visibility: hidden;
+                    visibility: var(--uc-sb-moz-button-visibility);
                 }
             }
             /* Reduce bottom padding if the last element is no longer the one displayed at the bottom */
@@ -1229,14 +1311,17 @@
                 }
             }
         }
-        /* Hide text labels on sidebar tool buttons */
+        /* Obsolete: Firefox no longer labels non-.expanded-button, and this rule breaks other buttons. */
+        /*
+        \/* Hide text labels on sidebar tool buttons *\/
         .button-background.labelled > label {
             display: none !important;
         }
-        /* Adjust the highlight width of tool button backgrounds */
+        \/* Adjust the highlight width of tool button backgrounds *\/
         button > .button-background {
             width: var(--button-size-icon) !important;
         }
+        */
     }
 }
 
@@ -1584,30 +1669,66 @@
             }
 
             &:is([soundplaying], [muted], [activemedia-blocked]) {
+                background-color: transparent !important;
+                background-image: none !important;
+                -moz-context-properties: fill, fill-opacity;
+                fill: var(--tab-selected-textcolor);
+                color-scheme: var(--tab-selected-color-scheme);
+                border-radius: var(--border-radius-circle);
+
+                &[selected] {
+                    background-color: transparent !important;
+                    background-image: none !important;
+                }
+                .browser-toolbox-background:-moz-window-inactive &[selected] {
+                    background-color: transparent !important;
+                    background-image: none !important;
+                }
+                .tabbrowser-tab:hover &:not([selected]) {
+                    background-color: transparent !important;
+                    background-image: none !important;
+                }
+                .tabbrowser-tab:hover &:hover {
+                    background-color: color-mix(in srgb, currentColor 17%, transparent) !important;
+                    background-image: none !important;
+                }
+            }
+
+            /*
+            &:is([soundplaying], [muted], [activemedia-blocked]) {
+                --button-background-color-ghost-hover: color-mix(in srgb, currentColor 17%, transparent) !important;
                 --audio-overlay-extra-background: transparent;
                 background-color: var(--lwt-accent-color);
                 background-image:
                     linear-gradient(var(--audio-overlay-extra-background)), linear-gradient(var(--toolbox-bgcolor));
-                -moz-context-properties: fill;
+                -moz-context-properties: fill, fill-opacity;
                 fill: var(--tab-selected-textcolor);
                 color-scheme: var(--tab-selected-color-scheme);
                 border-radius: var(--border-radius-circle);
 
                 &:hover {
-                    --audio-overlay-extra-background: var(--button-background-color-ghost-hover);
+                    --audio-overlay-extra-background: var(--button-background-color-ghost-hover) !important;
                 }
 
+                .tabbrowser-tab:hover &:not([selected]) {
+                    background-image:
+                        linear-gradient(var(--audio-overlay-extra-background)),
+                        linear-gradient(var(--tab-hover-background-color)), linear-gradient(var(--toolbox-bgcolor)) !important;
+                }
                 &[selected] {
                     background-image:
                         linear-gradient(var(--audio-overlay-extra-background)),
-                        linear-gradient(var(--tab-selected-bgcolor)), linear-gradient(var(--toolbox-bgcolor));
+                        linear-gradient(var(--uc-vt-active-tab-bgcolor)),
+                        linear-gradient(var(--toolbox-bgcolor)) !important;
                 }
                 .browser-toolbox-background:-moz-window-inactive &[selected] {
                     background-image:
                         linear-gradient(var(--audio-overlay-extra-background)),
-                        linear-gradient(var(--tab-selected-bgcolor)), linear-gradient(var(--toolbox-bgcolor-inactive));
+                        linear-gradient(var(--uc-vt-active-tab-bgcolor)),
+                        linear-gradient(var(--toolbox-bgcolor-inactive)) !important;
                 }
             }
+            */
         }
     }
 
@@ -1629,6 +1750,7 @@
     /* Tab group: Soften tab group label colors to make them less prominent */
     .tab-group-label {
         --tab-group-label-animation-duration: 150ms;
+        border-radius: 4px !important;
         transition:
             scale 300ms ease 0s,
             box-shadow var(--tab-group-label-animation-duration) !important;
@@ -1647,15 +1769,28 @@
         &[aria-expanded="false"] {
             opacity: 0.88;
             @media (prefers-color-scheme: dark) {
-                opacity: 0.83;
+                opacity: 0.85;
             }
         }
         /* Remove border from collapsed tab groups */
-        tab-group[collapsed] > .tab-group-label-container > & {
+        /* Fix v144 change: .tab-group-label is no longer a direct descendant */
+        tab-group[collapsed] /*> .tab-group-label-container >*/ & {
             outline: none !important;
             /*
             outline: 1px solid light-dark(var(--tab-group-color), var(--tab-group-color-invert)) !important;
             */
+        }
+    }
+
+    /* Remove styles introduced for the new element in v144 */
+    .tab-group-label-hover-highlight {
+        tab-group & {
+            background-color: transparent !important;
+
+            #tabbrowser-tabs[orient="vertical"] & {
+                margin-inline: 0 !important;
+                box-shadow: none !important;
+            }
         }
     }
 
@@ -1666,19 +1801,141 @@
             box-sizing: content-box;
             padding-block: 2.5px;
 
-            @media -moz-pref("uc.flex.disable-sidebery-autohide") {
-                align-self: auto !important;
-                padding-inline: 16px !important;
-                max-width: 100% !important;
-                font-size: 1rem;
+            font-size: 1rem;
+            -moz-context-properties: fill, fill-opacity;
+
+            /* Expanded state indicator */
+            &::before {
+                position: absolute;
+                content: "";
+                left: 10px;
+                width: 24px;
+                height: 24px;
+                background-image: url("../icons/tab-group/tab-group-expanded.svg");
+                background-position: 1px 6px;
+                background-repeat: no-repeat;
+                background-size: 11px;
+                fill: currentColor;
+                opacity: 0;
             }
-            @media not -moz-pref("uc.flex.disable-sidebery-autohide") {
-                :root[titlepreface*="\180e "] & {
+            /* Collapsed state indicator */
+            &[aria-expanded="false"]::before {
+                background-image: url("../icons/tab-group/tab-group-collapsed.svg");
+                background-position: 0 6px;
+                background-size: 12px;
+            }
+            /* Always show indicator when there is no label text */
+            tab-group[label="\200b "] &::before {
+                opacity: 1;
+            }
+
+            /* Keep expanded layout when auto-collapse is disabled */
+            @media -moz-pref("uc.flex.disable-sidebery-autohide") {
+                @media not (-moz-pref("uc.flex.style-tab-group", 3) or -moz-pref("uc.flex.style-tab-group", 4)) {
+                    width: calc(100% - 48px - var(--space-medium));
+                    text-align: start !important;
+                    padding-inline: 32px 16px !important;
+
+                    &::before {
+                        opacity: 1;
+                    }
+                }
+                @media -moz-pref("uc.flex.style-tab-group", 3) or -moz-pref("uc.flex.style-tab-group", 4) {
                     align-self: auto !important;
                     padding-inline: 16px !important;
                     max-width: 100% !important;
-                    font-size: 1rem;
+
+                    &::before {
+                        left: calc((var(--uc-sidebar-main-hover-width) - var(--space-medium)) / 2);
+                        transform: translateX(-50%);
+                    }
                 }
+            }
+            @media not -moz-pref("uc.flex.disable-sidebery-autohide") {
+                :root[titlepreface*="\180e "] & {
+                    @media not (-moz-pref("uc.flex.style-tab-group", 3) or -moz-pref("uc.flex.style-tab-group", 4)) {
+                        width: calc(100% - 48px - var(--space-medium));
+                        text-align: start !important;
+                        padding-inline: 32px 16px !important;
+
+                        &::before {
+                            opacity: 1;
+                        }
+                    }
+                    @media -moz-pref("uc.flex.style-tab-group", 3) or -moz-pref("uc.flex.style-tab-group", 4) {
+                        align-self: auto !important;
+                        padding-inline: 16px !important;
+                        max-width: 100% !important;
+
+                        &::before {
+                            left: calc((var(--uc-sidebar-main-hover-width) - var(--space-medium)) / 2);
+                            transform: translateX(-50%);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /* rotate jumpy icon */
+    @keyframes iconAnimation-open {
+        0% {
+            transform: rotate(0deg) scale(1);
+        }
+
+        50% {
+            transform: rotate(360deg) scale(1.1);
+            /* Jumpy scaling */
+        }
+
+        75% {
+            transform: rotate(360deg) scale(0.9);
+        }
+
+        100% {
+            transform: rotate(360deg) scale(1);
+        }
+    }
+
+    /* rotate jumpy icon inverted */
+    @keyframes iconAnimation-close {
+        0% {
+            transform: rotate(0deg) scale(1);
+        }
+
+        50% {
+            transform: rotate(-360deg) scale(1.1);
+            /* Jumpy scaling */
+        }
+
+        75% {
+            transform: rotate(-360deg) scale(0.9);
+        }
+
+        100% {
+            transform: rotate(-360deg) scale(1);
+        }
+    }
+
+    /* Expand/collapse animation for tab groups */
+    @media -moz-pref("uc.flex.style-tab-group", 2) or -moz-pref("uc.flex.style-tab-group", 4) {
+        tab-group {
+            display: flex !important;
+            flex-direction: column;
+            max-height: 120px !important;
+            overflow: hidden;
+            transition: max-height 50ms ease;
+            &:not([collapsed]) {
+                max-height: 100% !important;
+                transition: max-height 800ms ease;
+            }
+            &[collapsed] .tab-group-label::before {
+                animation: iconAnimation-close 700ms ease-in-out forwards;
+                animation-fill-mode: forwards;
+            }
+            &:not([collapsed]) .tab-group-label::before {
+                animation: iconAnimation-open 800ms ease-in-out forwards;
+                animation-fill-mode: forwards;
             }
         }
     }
@@ -1742,7 +1999,6 @@
                 .tab-group-label {
                     --tab-group-label-animation-duration: 150ms;
                     min-width: 24px !important;
-                    font-size: 1rem;
                     &::first-letter {
                         font-size-adjust: none;
                         font-weight: var(--font-weight-bold);
@@ -1754,18 +2010,66 @@
                     .tab-group-label {
                         padding-inline: 4px !important;
                         font-size-adjust: 0;
-                        transition:
-                            scale 300ms ease 0s,
-                            box-shadow var(--tab-group-label-animation-duration),
-                            align-self var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
-                                var(--uc-autohide-sidebar-delay) allow-discrete,
-                            padding-inline var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
-                                var(--uc-autohide-sidebar-delay),
-                            max-width var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
-                                var(--uc-autohide-sidebar-delay),
-                            font-size-adjust var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
-                                var(--uc-autohide-sidebar-delay) allow-discrete !important;
+
+                        @media not (-moz-pref("uc.flex.style-tab-group", 3) or -moz-pref("uc.flex.style-tab-group", 4)) {
+                            width: 24px;
+                            transition:
+                                scale 300ms ease 0s,
+                                box-shadow var(--tab-group-label-animation-duration),
+                                text-align var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-autohide-sidebar-delay) allow-discrete,
+                                padding-inline var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-autohide-sidebar-delay),
+                                width var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-autohide-sidebar-delay),
+                                font-size-adjust var(--uc-autohide-transition-duration)
+                                    var(--uc-autohide-transition-type) var(--uc-autohide-sidebar-delay) allow-discrete !important;
+
+                            &::before {
+                                transition: opacity var(--uc-autohide-transition-duration)
+                                    var(--uc-autohide-transition-type) var(--uc-autohide-sidebar-delay);
+                            }
+                            /*
+                            &::before {
+                                position: absolute;
+                                content: "◢";
+                                left: 12px;
+                                font-family: MS UI Gothic;
+                                font-size: 1rem;
+                            }
+                            &[aria-expanded="false"]::before {
+                                content: "▶";
+                            }
+                            tab-group[label="\200b "] & {
+                                &::before {
+                                    font-size-adjust: none;
+                                }
+                            }
+                            */
+                        }
+                        @media -moz-pref("uc.flex.style-tab-group", 3) or -moz-pref("uc.flex.style-tab-group", 4) {
+                            transition:
+                                scale 300ms ease 0s,
+                                box-shadow var(--tab-group-label-animation-duration),
+                                align-self var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-autohide-sidebar-delay) allow-discrete,
+                                padding-inline var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-autohide-sidebar-delay),
+                                max-width var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-autohide-sidebar-delay),
+                                font-size-adjust var(--uc-autohide-transition-duration)
+                                    var(--uc-autohide-transition-type) var(--uc-autohide-sidebar-delay) allow-discrete !important;
+
+                            &::before {
+                                transition:
+                                    left var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
+                                        var(--uc-autohide-sidebar-delay),
+                                    transform var(--uc-autohide-transition-duration) var(--uc-autohide-transition-type)
+                                        var(--uc-autohide-sidebar-delay);
+                            }
+                        }
                     }
+
                     .tab-group-overflow-count-container {
                         label {
                             margin-inline-start: calc(0px - var(--space-xxsmall)) !important;
@@ -1790,28 +2094,66 @@
                                 var(--uc-autohide-sidebar-delay) !important;
                         .tab-group-line {
                             visibility: hidden;
-                            transition-delay: var(--uc-autohide-sidebar-delay);
+                            transition: visibility 0s var(--uc-autohide-sidebar-delay);
                         }
                     }
                 }
 
                 #sidebar-main[sidebar-launcher-expanded]:hover & {
-                    .tab-group-label {
-                        align-self: auto !important;
-                        padding-inline: 16px !important;
-                        font-size-adjust: none;
+                    .tab-group-label-container {
                         max-width: 100% !important;
-                        transition:
-                            scale 300ms ease 0s,
-                            box-shadow var(--tab-group-label-animation-duration),
-                            align-self var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                                var(--uc-hover-sidebar-delay) allow-discrete,
-                            padding-inline var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                                var(--uc-hover-sidebar-delay),
-                            max-width var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                                var(--uc-hover-sidebar-delay),
-                            font-size-adjust var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
-                                var(--uc-hover-sidebar-delay) allow-discrete !important;
+                    }
+                    .tab-group-label {
+                        @media not (-moz-pref("uc.flex.style-tab-group", 3) or -moz-pref("uc.flex.style-tab-group", 4)) {
+                            width: calc(100% - 48px - var(--space-medium));
+                            text-align: start !important;
+                            padding-inline: 32px 16px !important;
+                            font-size-adjust: none;
+                            transition:
+                                scale 300ms ease 0s,
+                                box-shadow var(--tab-group-label-animation-duration),
+                                text-align var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-hover-sidebar-delay) allow-discrete,
+                                padding-inline var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-hover-sidebar-delay),
+                                width var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-hover-sidebar-delay),
+                                font-size-adjust var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-hover-sidebar-delay) allow-discrete !important;
+
+                            &::before {
+                                opacity: 1;
+                                transition: opacity var(--uc-hover-transition-duration)
+                                    var(--uc-autohide-transition-type) var(--uc-hover-sidebar-delay);
+                            }
+                        }
+                        @media -moz-pref("uc.flex.style-tab-group", 3) or -moz-pref("uc.flex.style-tab-group", 4) {
+                            align-self: auto !important;
+                            padding-inline: 16px !important;
+                            font-size-adjust: none;
+                            max-width: 100% !important;
+                            transition:
+                                scale 300ms ease 0s,
+                                box-shadow var(--tab-group-label-animation-duration),
+                                align-self var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-hover-sidebar-delay) allow-discrete,
+                                padding-inline var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-hover-sidebar-delay),
+                                max-width var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-hover-sidebar-delay),
+                                font-size-adjust var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                                    var(--uc-hover-sidebar-delay) allow-discrete !important;
+
+                            &::before {
+                                left: calc((var(--uc-sidebar-main-hover-width) - var(--space-medium)) / 2);
+                                transform: translateX(-50%);
+                                transition:
+                                    left var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                                        var(--uc-hover-sidebar-delay),
+                                    transform var(--uc-hover-transition-duration) var(--uc-autohide-transition-type)
+                                        var(--uc-hover-sidebar-delay);
+                            }
+                        }
                     }
                     .tab-group-overflow-count-container {
                         label {
@@ -1837,7 +2179,7 @@
                                 var(--uc-hover-sidebar-delay) !important;
                         .tab-group-line {
                             visibility: visible;
-                            transition-delay: var(--uc-hover-sidebar-delay);
+                            transition: visibility 0s var(--uc-hover-sidebar-delay);
                         }
                     }
                 }
@@ -1965,67 +2307,84 @@
 
 /* Autohide tools and extensions when verticalTabs are enabled */
 @media -moz-pref("sidebar.verticalTabs") {
-    /* Hide all tool buttons except the last one ('configuration') */
-    .tools-and-extensions.actions-list[orientation="vertical"]:not(:hover)
-        > moz-button[type="icon ghost"]:not(:last-child),
-    .tools-and-extensions.actions-list[orientation="horizontal"]:not(:hover)
-        > moz-button[type="icon ghost"]:not(:first-child) {
-        opacity: 0 !important;
-        transform: translateY(10px) !important;
-        visibility: collapse !important;
-        transition:
-            opacity 0.2s ease-in-out,
-            visibility 0.2s ease,
-            transform 0.4s ease;
+    @media not -moz-pref("sidebar.visibility", "expand-on-hover") {
+        /* Hide all tool buttons except the last one ('configuration') */
+        .tools-and-extensions.actions-list[orientation="vertical"]:not(:hover)
+            > moz-button[type="icon ghost"]:not(:last-child),
+        .tools-and-extensions.actions-list[orientation="horizontal"]:not(:hover)
+            > moz-button[type="icon ghost"]:not(:first-child) {
+            opacity: 0 !important;
+            transform: translateY(10px) !important;
+            visibility: collapse !important;
+            transition:
+                opacity 0.2s ease-in-out,
+                visibility 0.2s ease,
+                transform 0.4s ease;
+        }
+
+        /* Show all tool buttons on hover */
+        .tools-and-extensions.actions-list[orientation="vertical"]:hover
+            > moz-button[type="icon ghost"]:not(:last-child),
+        .tools-and-extensions.actions-list[orientation="horizontal"]:hover
+            > moz-button[type="icon ghost"]:not(:first-child) {
+            opacity: 1 !important;
+            transform: translateY(0px) !important;
+            visibility: visible !important;
+            transition:
+                opacity 0.2s ease-in-out,
+                visibility 0.2s ease,
+                transform 0.4s ease;
+        }
+
+        /* Hide the 'configuration' button when another tool is active */
+        .tools-and-extensions.actions-list[orientation="vertical"]:not(:hover):has(> moz-button[type="icon"])
+            > moz-button[type="icon ghost"]:is(:last-child),
+        .tools-and-extensions.actions-list[orientation="horizontal"]:not(:hover):has(> moz-button[type="icon"])
+            > moz-button[type="icon ghost"]:is(:first-child) {
+            opacity: 0 !important;
+            visibility: collapse !important;
+            transform: translateY(10px) !important;
+            transition:
+                opacity 0.2s ease-in-out,
+                visibility 0.2s ease,
+                transform 0.4s ease;
+        }
+
+        /* Show the 'configuration' button on hover */
+        .tools-and-extensions.actions-list:is(:hover) > moz-button[type="icon ghost"]:is(:last-child),
+        .tools-and-extensions.actions-list:is(:hover) > moz-button[type="icon ghost"]:is(:first-child) {
+            opacity: 1 !important;
+            visibility: visible !important;
+            transform: translateY(0px) !important;
+            transition:
+                opacity 0.2s ease-in-out,
+                visibility 0.2s ease,
+                transform 0.4s ease;
+        }
+
+        /* Ensure the active tool button always appears at the end */
+        .tools-and-extensions.actions-list[orientation="vertical"] > moz-button[type="icon"] {
+            order: 1 !important;
+        }
+        .tools-and-extensions.actions-list[orientation="horizontal"] > moz-button[type="icon"] {
+            order: -1 !important;
+        }
+
+        /* Fix sidebar tools not expanding due to a regression in Nightly 144 */
+        .tools-and-extensions[orientation="horizontal"] {
+            &[overflowing="true"] {
+                flex-wrap: wrap-reverse !important;
+            }
+        }
+
+        .buttons-wrapper {
+            min-height: auto !important;
+            height: auto !important;
+            overflow: visible !important;
+        }
     }
 
-    /* Show all tool buttons on hover */
-    .tools-and-extensions.actions-list[orientation="vertical"]:hover > moz-button[type="icon ghost"]:not(:last-child),
-    .tools-and-extensions.actions-list[orientation="horizontal"]:hover
-        > moz-button[type="icon ghost"]:not(:first-child) {
-        opacity: 1 !important;
-        transform: translateY(0px) !important;
-        visibility: visible !important;
-        transition:
-            opacity 0.2s ease-in-out,
-            visibility 0.2s ease,
-            transform 0.4s ease;
-    }
-
-    /* Hide the 'configuration' button when another tool is active */
-    .tools-and-extensions.actions-list[orientation="vertical"]:not(:hover):has(> moz-button[type="icon"])
-        > moz-button[type="icon ghost"]:is(:last-child),
-    .tools-and-extensions.actions-list[orientation="horizontal"]:not(:hover):has(> moz-button[type="icon"])
-        > moz-button[type="icon ghost"]:is(:first-child) {
-        opacity: 0 !important;
-        visibility: collapse !important;
-        transform: translateY(10px) !important;
-        transition:
-            opacity 0.2s ease-in-out,
-            visibility 0.2s ease,
-            transform 0.4s ease;
-    }
-
-    /* Show the 'configuration' button on hover */
-    .tools-and-extensions.actions-list:is(:hover) > moz-button[type="icon ghost"]:is(:last-child),
-    .tools-and-extensions.actions-list:is(:hover) > moz-button[type="icon ghost"]:is(:first-child) {
-        opacity: 1 !important;
-        visibility: visible !important;
-        transform: translateY(0px) !important;
-        transition:
-            opacity 0.2s ease-in-out,
-            visibility 0.2s ease,
-            transform 0.4s ease;
-    }
-
-    /* Ensure the active tool button always appears at the end */
-    .tools-and-extensions.actions-list[orientation="vertical"] > moz-button[type="icon"] {
-        order: 1 !important;
-    }
-    .tools-and-extensions.actions-list[orientation="horizontal"] > moz-button[type="icon"] {
-        order: -1 !important;
-    }
-
+    /* Fix sidebar tools height, width, and top margin issues caused by a regression in Nightly 141 */
     @media -moz-pref("sidebar.visibility", "expand-on-hover") {
         .tools-and-extensions.actions-list {
             &[orientation="horizontal"] {
@@ -2036,19 +2395,11 @@
                 height: auto !important;
             }
         }
-    }
 
-    /* Fix sidebar tools not expanding due to a regression in Nightly 144 */
-    .tools-and-extensions[orientation="horizontal"] {
-        &[overflowing="true"] {
-            flex-wrap: wrap-reverse !important;
+        /* Fix sidebar tools not expanding on hover with active Sidebery due to a regression in Nightly 144 */
+        .buttons-wrapper:hover {
+            height: auto !important;
         }
-    }
-
-    .buttons-wrapper {
-        min-height: auto !important;
-        height: auto !important;
-        overflow: visible !important;
     }
 }
 /* 🔼 [BLOCK G] End of rules unrelated to Sidebery */

@@ -7,6 +7,7 @@
          * the corresponding variables in uc-user-settings.css to keep both sides consistent. 
          */
         /* Sidebar expand/collapse animation settings */
+        --uc-sidebar-width: 44px;
         --uc-autohide-transition-type: ease-in-out; /* Easing type for sidebar collapsing animation */
         --uc-autohide-transition-duration: 55ms; /* Duration of sidebar collapsing animation */
         --uc-hover-transition-duration: 115ms; /* Duration of sidebar expanding animation */
@@ -26,12 +27,20 @@
             --uc-hover-toolbar-delay: 200ms;
         }
 
+        @media -moz-pref("uc.flex.style-toolbar-bgcolor", 2) {
+            --frame-bg: light-dark(#f5f6f6, #26252e) !important;
+            --toolbar-bg: light-dark(#f5f6f6, #26252e) !important;
+            --bg: light-dark(#f5f6f6, #26252e) !important;
+        }
+
+        /* Border color for navigation bar */
+        --uc-sb-navigation-border-color: light-dark(#ced1d4, rgba(172, 112, 255, 0.45));
         /* Border color for pinned tabs */
         --uc-sb-pinned-tab-border-color: light-dark(rgba(0, 0, 0, 0.22), rgba(172, 112, 255, 0.7));
         /* Border color for unloaded pinned tabs */
         --uc-sb-pinned-tab-unloaded-border-color: light-dark(rgba(0, 0, 0, 0.1), rgba(172, 112, 255, 0.28));
         /* Background color for the active tab */
-        --uc-sb-active-tab-bgcolor: light-dark(#ea4c895e, #9651ff80);
+        --uc-sb-active-tab-bgcolor: light-dark(#ea4c895e, #9059ff80);
         /* Inner border shadow (outline) for the active tab */
         --uc-sb-active-tab-border-shadow: 0 0 0 1px light-dark(rgba(0, 0, 0, 0.6), rgba(255, 255, 255, 0.467));
         /* Drop shadow beneath the active tab */
@@ -51,6 +60,29 @@
         @media -moz-pref("uc.flex.max-visible-horizontal-pinned-tabs", 2) {
             --uc-sb-pinned-tab-max-columns: 49%;
         }
+        @media -moz-pref("uc.flex.max-visible-horizontal-pinned-tabs", 1) {
+            --uc-sb-pinned-tab-max-columns: 100%;
+        }
+
+        --uc-sb-pinned-tab-max-rows: 4;
+        @media -moz-pref("uc.flex.max-visible-vertical-pinned-tabs", 2) {
+            --uc-sb-pinned-tab-max-rows: 2;
+        }
+        @media -moz-pref("uc.flex.max-visible-vertical-pinned-tabs", 3) {
+            --uc-sb-pinned-tab-max-rows: 3;
+        }
+        @media -moz-pref("uc.flex.max-visible-vertical-pinned-tabs", 5) {
+            --uc-sb-pinned-tab-max-rows: 5;
+        }
+        @media -moz-pref("uc.flex.max-visible-vertical-pinned-tabs", 6) {
+            --uc-sb-pinned-tab-max-rows: 6;
+        }
+        @media -moz-pref("uc.flex.max-visible-vertical-pinned-tabs", 7) {
+            --uc-sb-pinned-tab-max-rows: 7;
+        }
+        @media -moz-pref("uc.flex.max-visible-vertical-pinned-tabs", 8) {
+            --uc-sb-pinned-tab-max-rows: 8;
+        }
     }
 
     /* Add text stroke */
@@ -68,6 +100,10 @@
         }
     }
 
+    .NavigationBar {
+        border-bottom: 1px solid var(--uc-sb-navigation-border-color) !important;
+    }
+
     .tab-wrapper .Tab .body {
         border: 1.5px solid var(--uc-sb-pinned-tab-border-color) !important;
     }
@@ -79,7 +115,24 @@
         .PinnedTabsBar {
             min-width: 200px;
             grid-template-columns: repeat(auto-fit, minmax(var(--uc-sb-pinned-tab-max-columns), 1fr)) !important;
+            grid-auto-rows: min-content;
+            flex-shrink: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scroll-behavior: smooth;
+            @media not -moz-pref("uc.flex.max-visible-vertical-pinned-tabs", 0) {
+                max-height: calc(var(--uc-sb-pinned-tab-max-rows) * 37px - 2px);
+            }
 
+            @media -moz-pref("uc.flex.sidebery-allow-resizable-width") {
+                @media not (-moz-pref("uc.flex.fully-hide-sidebery") or (display-mode: fullscreen)) {
+                    @media (width < 200px) {
+                        display: flex !important;
+                        min-width: var(--uc-sidebar-width);
+                    }
+                }
+            }
             .Tab {
                 min-width: 34px !important;
                 width: 97% !important;
@@ -307,16 +360,18 @@
                     var(--uc-hover-sidebar-delay);
             }
 
-            /** 
-             * The expanded state is determined by width > 50px, but the default collapsed width is 44px.
-             * This leaves a gap between 44px and 50px where margins and padding are unset,
-             * causing a flickering effect. We override them during hover to smooth out the transition. 
-             */
-            .ScrollBox .Tab {
-                margin-left: 7px !important;
-            }
-            .Tab:hover {
-                --tabs-inner-gap: 5px !important;
+            @media not (-moz-pref("uc.flex.sidebery-allow-resizable-width") and (width < 50px)) {
+                /** 
+                 * The expanded state is determined by width > 50px, but the default collapsed width is 44px.
+                 * This leaves a gap between 44px and 50px where margins and padding are unset,
+                 * causing a flickering effect. We override them during hover to smooth out the transition. 
+                 */
+                .ScrollBox .Tab {
+                    margin-left: 7px !important;
+                }
+                .Tab:hover {
+                    --tabs-inner-gap: 5px !important;
+                }
             }
         }
         /* 🔼 End of hover state block */
@@ -355,10 +410,12 @@
             height: 40px !important;
             padding: 3px 0px 2.5px 5px !important;
             margin-bottom: 4px !important;
+            /*
             border-bottom: 1px solid #ced1d4 !important;
             @media (prefers-color-scheme: dark) {
                 border-bottom: 1px solid #686869b3 !important;
             }
+            */
             overflow: hidden;
             &:not(:hover) {
                 transition:
@@ -436,6 +493,60 @@
         */
         #root[data-tabs-tree-lvl-marks="true"] .Tab[data-pin="false"]:not([data-lvl="0"]) .body:after {
             visibility: visible;
+        }
+    }
+
+    /* Override inline styles when Sidebery is resizable and width < 50px 
+        to prevent layout shifts */
+    @media -moz-pref("uc.flex.sidebery-allow-resizable-width") and (width < 50px) {
+        @media not (-moz-pref("uc.flex.fully-hide-sidebery") or (display-mode: fullscreen)) {
+            #root[data-tabs-tree-lvl-marks="true"] .Tab[data-pin="false"]:not([data-lvl="0"]) .body:after {
+                display: none !important;
+            }
+            #root .Tab {
+                --tabs-indent: 0px !important;
+            }
+            #root .PinnedTabsBar .Tab .fav,
+            #root .PinnedTabsBar .Tab .fav-icon {
+                width: 16px !important;
+                height: 16px !important;
+            }
+            #root {
+                .ScrollBox .Tab {
+                    margin-left: 5px !important;
+                }
+                .Tab[data-parent="true"] .exp {
+                    top: 6px !important;
+                    left: -15px !important;
+                }
+                .Tab[data-parent="true"][data-folded="false"] .exp-icon {
+                    top: 4px !important;
+                    left: 5px !important;
+                    width: 14px !important;
+                    height: 14px !important;
+                }
+                .Tab[data-parent="true"] .child-count {
+                    top: 12px !important;
+                    left: 2px !important;
+                }
+            }
+            /* Use #root.root to increase specificity and override inline :hover styles, 
+                so no extra :hover checks are needed in this mode (reducing overhead) */
+            #root.root {
+                .Tab[data-parent="true"][data-folded="false"] .exp {
+                    visibility: visible;
+                }
+                .Tab .close-icon {
+                    visibility: visible;
+                    top: -2px !important;
+                    left: -4px !important;
+                    width: 16px !important;
+                    height: 16px !important;
+                }
+                .Tab .audio {
+                    margin-left: -3px !important;
+                }
+            }
         }
     }
 
