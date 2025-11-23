@@ -34,10 +34,14 @@
 
 /* Remove the border and rounded corners from the webpage content area */
 @media -moz-pref("sidebar.revamp") {
-    #tabbrowser-tabbox {
+    /* !TEMPORARY: The following #tabbrowser-tabbox rules will no longer be needed starting from v147. */
+    #tabbrowser-tabbox,
+    .browserContainer {
         outline: none !important;
         box-shadow: none !important;
         @media -moz-pref("sidebar.revamp.round-content-area") {
+            overflow: unset !important;
+
             &:not([sidebar-positionend]) {
                 border-start-start-radius: var(--uc-sb-tabbox-border-radius, var(--border-radius-medium)) !important;
             }
@@ -111,6 +115,24 @@
             }
         }
     }
+
+    /* !TEMPORARY: Fix for Nightly v147 change that broke border-radius. 
+        This is still under development and the fix may need adjustments in the future. */
+    &[splitview] {
+        > .split-view-panel {
+            margin: 0 !important;
+
+            &:not(.deck-selected) {
+                overflow: unset !important;
+            }
+
+            @media not -moz-pref("uc.flex.enable-rounded-web-content") {
+                > split-view-footer {
+                    border-end-end-radius: 0 !important;
+                }
+            }
+        }
+    }
 }
 
 /* ════════════════════════════════════════════════════════════════════
@@ -134,6 +156,7 @@
                 }
             }
 
+            /* !TEMPORARY: The following #tabbrowser-tabbox rules will no longer be needed starting from v147. */
             #tabbrowser-tabbox {
                 box-shadow: none !important;
                 outline: none !important;
@@ -161,6 +184,27 @@
             }
 
             .browserContainer {
+                /* !TEMPORARY: Fix for Nightly v147 change that broke border-radius. 
+                    This is still under development and the fix may need adjustments in the future. */
+                background: transparent !important;
+                @media -moz-pref("sidebar.revamp") {
+                    outline: none !important;
+                    box-shadow: none !important;
+                }
+                @media -moz-pref("sidebar.revamp") and -moz-pref("sidebar.revamp.round-content-area") {
+                    overflow: unset !important;
+                    /*
+                    :root:not([inDOMFullscreen]) #tabbrowser-tabbox[sidebar-shown] & {
+                        @media -moz-pref("sidebar.position_start") {
+                            border-start-start-radius: 0 !important;
+                        }
+                        @media not -moz-pref("sidebar.position_start") {
+                            border-start-end-radius: 0 !important;
+                        }
+                    }
+                    */
+                }
+
                 /**
                  * When DevTools and Sidebery are docked on the same side, 
                  * the corresponding corner of the web content container should always be rounded. 
@@ -231,12 +275,18 @@
                     border-top-right-radius: var(--uc-web-content-radius);
                     margin-right: var(--uc-web-content-margin);
                     box-shadow: 0 1.5px 9px light-dark(#00000026, #00000040);
+                    @media -moz-pref("uc.flex.-dev-web-content-box-shadow-highlight") {
+                        box-shadow: 0 1.5px 9px red;
+                    }
                 }
                 /* When DevTools is docked on the right, override sharp corner with a rounded one and add left margin */
                 @media -moz-pref("devtools.toolbox.host", "right") {
                     border-top-left-radius: var(--uc-web-content-radius);
                     margin-left: var(--uc-web-content-margin);
                     box-shadow: 0 1.5px 9px light-dark(#00000026, #00000040);
+                    @media -moz-pref("uc.flex.-dev-web-content-box-shadow-highlight") {
+                        box-shadow: 0 1.5px 9px red;
+                    }
                 }
             }
 
@@ -244,12 +294,19 @@
                 border-radius: var(--uc-web-content-radius);
                 margin-top: var(--uc-web-content-margin);
                 box-shadow: 0 1.5px 9px light-dark(#00000026, #00000040);
+                @media -moz-pref("uc.flex.-dev-web-content-box-shadow-highlight") {
+                    box-shadow: 0 1.5px 9px red;
+                }
             }
 
             .devtools-side-splitter,
             .devtools-horizontal-splitter {
                 opacity: 0;
             }
+        }
+
+        .split-view-splitter {
+            opacity: 0;
         }
 
         /* Round the corners of the status panel */
@@ -311,8 +368,10 @@
                     #ask-chat-shortcuts,
                     #selection-shortcut-action-panel,
                     #chat-shortcuts-options-panel,
-                    #tab-preview-panel
-                )
+                    #tab-preview-panel,
+                    #tabgroup-preview-panel
+                ),
+            #tab-group-editor > [panelopen]
         )
         ~ #browser
         #tabbrowser-tabbox {
@@ -323,10 +382,26 @@
 
     /* When the navigator or its child bookmark toolbar is expanded, clip the tab box to reveal the Mica backdrop */
     @media not -moz-pref("sidebar.verticalTabs") {
+        #mainPopupSet:has(> #tab-group-editor > [panelopen], > #tabgroup-preview-panel[panelopen])
+            ~ #browser
+            #tabbrowser-tabbox,
         #navigator-toolbox:hover ~ #browser #tabbrowser-tabbox {
             --uc-tabbox-clip-path-start: var(--uc-hover-navigator-tabbox-clip-path-start);
             --uc-tabbox-clip-path-end: var(--uc-hover-navigator-tabbox-clip-path-end);
             --uc-tabbox-clip-path-transition: var(--uc-hover-tabbox-clip-path-transition);
+        }
+
+        /* When the "hide horizontal tabs" option is set to 3, the tab bar only appears when hovering over the tabs toolbar.
+           In this case, the following variables are used to apply additional clipping. */
+        @media -moz-pref("uc.flex.auto-hide-horizontal-tabs-and-keep-navbar", 3) and (not -moz-pref("uc.flex.auto-hide-navbar-and-keep-horizontal-tabs")) {
+            #mainPopupSet:has(> #tab-group-editor > [panelopen], > #tabgroup-preview-panel[panelopen])
+                ~ #browser
+                #tabbrowser-tabbox,
+            #navigator-toolbox:has(> :is(#toolbar-menubar, #TabsToolbar):hover) ~ #browser #tabbrowser-tabbox,
+            #navigator-toolbox[movingtab] ~ #browser #tabbrowser-tabbox {
+                --uc-tabbox-clip-path-start: var(--uc-hover-tabstoolbar-tabbox-clip-path-start);
+                --uc-tabbox-clip-path-end: var(--uc-hover-tabstoolbar-tabbox-clip-path-end);
+            }
         }
 
         /* Keep the tab box clipped when the navigator contains an open toolbar button */
@@ -557,6 +632,34 @@
         background-color: transparent !important;
     }
 
+    findbar,
+    .found-matches {
+        background-color: light-dark(
+            rgba(249, 249, 251, var(--uc-urlbar-backdrop-transparency)),
+            rgba(32, 32, 32, var(--uc-urlbar-backdrop-transparency))
+        ) !important;
+        background-image: none !important;
+    }
+    findbar {
+        backdrop-filter: blur(26px) saturate(140%);
+    }
+    findbar:has(> .findbar-container > .found-matches:not([hidden])) {
+        border-bottom-left-radius: 0px;
+    }
+    .found-matches {
+        height: 25px;
+        padding: 2px 12px 0px 10px;
+        top: 35px;
+        border-bottom-right-radius: var(--uc-findbar-outer-border-radius);
+        &::after {
+            display: none;
+        }
+    }
+}
+
+@media -moz-pref("extensions.activeThemeID", "default-theme@mozilla.org") and -moz-pref("widget.windows.mica"),
+    -moz-pref("uc.flex.browser-wallpaper-enabled"),
+    -moz-pref("uc.flex.enable-translucent-urlbar-popup-and-menus") {
     .toolbar-menupopup,
     menupopup {
         --panel-background: light-dark(
@@ -579,7 +682,7 @@
 
     /* backdrop-filter doesn't blur remote <browser> element https://bugzilla.mozilla.org/show_bug.cgi?id=1799334 */
     /* Needed to enable backdrop-filter effects on <browser> */
-    browser {
+    browser:not(.devtools-toolbox-side-iframe, .devtools-toolbox-bottom-iframe) {
         clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
     }
 
@@ -594,30 +697,6 @@
             rgba(32, 32, 32, var(--uc-urlbar-backdrop-transparency))
         ) !important;
         background-image: none !important;
-    }
-
-    findbar,
-    .found-matches {
-        background-color: light-dark(
-            rgba(249, 249, 251, var(--uc-urlbar-backdrop-transparency)),
-            rgba(32, 32, 32, var(--uc-urlbar-backdrop-transparency))
-        ) !important;
-        background-image: none !important;
-    }
-    findbar {
-        backdrop-filter: blur(26px) saturate(140%);
-    }
-    findbar:has(.found-matches:not([hidden])) {
-        border-bottom-left-radius: 0px;
-    }
-    .found-matches {
-        height: 25px;
-        padding: 2px 12px 0px 10px;
-        top: 35px;
-        border-bottom-right-radius: var(--uc-findbar-outer-border-radius);
-        &::after {
-            display: none;
-        }
     }
 }
 
